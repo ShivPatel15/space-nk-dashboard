@@ -1,0 +1,1463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Space NK — Strategic Account Dashboard</title>
+  <style>
+    :root {
+      --bg: #0a0a0a;
+      --surface: #141414;
+      --surface-2: #1c1c1e;
+      --surface-3: #2c2c2e;
+      --border: #2c2c2e;
+      --text: #f5f5f7;
+      --text-secondary: #a1a1a6;
+      --accent: #96bf48;
+      --accent-dim: rgba(150,191,72,0.12);
+      --red: #ff453a;
+      --red-dim: rgba(255,69,58,0.12);
+      --orange: #ff9f0a;
+      --orange-dim: rgba(255,159,10,0.12);
+      --blue: #0a84ff;
+      --blue-dim: rgba(10,132,255,0.12);
+      --yellow: #ffd60a;
+      --purple: #bf5af2;
+      --radius: 12px;
+      --radius-sm: 8px;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* === HEADER === */
+    .header {
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+      border-bottom: 1px solid var(--border);
+      padding: 32px 0 24px;
+    }
+    .header-inner {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+    .header-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .header-left { display: flex; align-items: center; gap: 16px; }
+    .company-logo {
+      width: 52px; height: 52px;
+      background: var(--surface-2);
+      border-radius: var(--radius);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px; font-weight: 700; color: var(--accent);
+      border: 1px solid var(--border);
+    }
+    .company-name { font-size: 28px; font-weight: 700; letter-spacing: -0.5px; }
+    .company-sub { font-size: 13px; color: var(--text-secondary); margin-top: 2px; }
+    .header-badges { display: flex; gap: 8px; flex-wrap: wrap; }
+    .badge {
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .badge-red { background: var(--red-dim); color: var(--red); border: 1px solid rgba(255,69,58,0.25); }
+    .badge-green { background: var(--accent-dim); color: var(--accent); border: 1px solid rgba(150,191,72,0.25); }
+    .badge-blue { background: var(--blue-dim); color: var(--blue); border: 1px solid rgba(10,132,255,0.25); }
+    .badge-orange { background: var(--orange-dim); color: var(--orange); border: 1px solid rgba(255,159,10,0.25); }
+
+    /* === SCORE BAR === */
+    .score-bar {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 12px;
+      margin-top: 16px;
+    }
+    .score-item {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: var(--radius-sm);
+      padding: 14px 16px;
+      backdrop-filter: blur(10px);
+    }
+    .score-label { font-size: 11px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 4px; }
+    .score-value { font-size: 22px; font-weight: 700; }
+    .score-detail { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+
+    /* === ICP METER === */
+    .icp-meter {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 6px;
+    }
+    .icp-bar-track {
+      flex: 1;
+      height: 8px;
+      background: var(--surface-3);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .icp-bar-fill {
+      height: 100%;
+      border-radius: 4px;
+      background: linear-gradient(90deg, var(--accent), #7ecf4c);
+      transition: width 1s ease;
+    }
+    .icp-num { font-size: 20px; font-weight: 800; color: var(--accent); min-width: 48px; text-align: right; }
+
+    /* === MAIN GRID === */
+    .main { max-width: 1280px; margin: 0 auto; padding: 24px; }
+    .grid { display: grid; gap: 20px; }
+    .grid-2 { grid-template-columns: 1fr 1fr; }
+    .grid-3 { grid-template-columns: 1fr 1fr 1fr; }
+    .grid-2-1 { grid-template-columns: 2fr 1fr; }
+    @media (max-width: 900px) {
+      .grid-2, .grid-3, .grid-2-1 { grid-template-columns: 1fr; }
+    }
+
+    /* === CARDS === */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+    .card-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .card-title {
+      font-size: 14px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      color: var(--text-secondary);
+    }
+    .card-body { padding: 20px; }
+    .card-body-compact { padding: 12px 20px; }
+
+    /* === TRIGGER TIMELINE === */
+    .timeline { list-style: none; }
+    .timeline-item {
+      position: relative;
+      padding: 14px 0 14px 28px;
+      border-left: 2px solid var(--surface-3);
+    }
+    .timeline-item:last-child { border-left-color: transparent; }
+    .timeline-dot {
+      position: absolute;
+      left: -7px;
+      top: 18px;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      border: 2px solid;
+    }
+    .dot-critical { border-color: var(--red); background: var(--red-dim); }
+    .dot-high { border-color: var(--orange); background: var(--orange-dim); }
+    .dot-medium { border-color: var(--blue); background: var(--blue-dim); }
+    .timeline-title { font-size: 14px; font-weight: 600; margin-bottom: 2px; }
+    .timeline-meta { font-size: 12px; color: var(--text-secondary); }
+    .timeline-desc { font-size: 13px; color: var(--text-secondary); margin-top: 4px; line-height: 1.4; }
+
+    /* === STAKEHOLDER TABLE === */
+    .stk-table { width: 100%; border-collapse: collapse; }
+    .stk-table th {
+      text-align: left;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      color: var(--text-secondary);
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--border);
+    }
+    .stk-table td {
+      padding: 12px;
+      font-size: 13px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+    }
+    .stk-table tr:last-child td { border-bottom: none; }
+    .stk-table tr:hover td { background: rgba(255,255,255,0.02); }
+    .stk-name { font-weight: 600; font-size: 14px; }
+    .stk-title { color: var(--text-secondary); font-size: 12px; margin-top: 1px; }
+    .stk-priority {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+    .stk-primary { background: var(--red-dim); color: var(--red); }
+    .stk-secondary { background: var(--orange-dim); color: var(--orange); }
+    .stk-tertiary { background: rgba(255,255,255,0.06); color: var(--text-secondary); }
+    .sfdc-badge {
+      font-size: 11px;
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-weight: 600;
+    }
+    .sfdc-no { background: var(--red-dim); color: var(--red); }
+    .sfdc-yes { background: var(--accent-dim); color: var(--accent); }
+    .stk-hook {
+      font-size: 12px;
+      color: var(--text-secondary);
+      font-style: italic;
+      line-height: 1.4;
+      max-width: 340px;
+    }
+
+    /* === COMPETITIVE COMPARISON === */
+    .comp-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .comp-row:last-child { border-bottom: none; }
+    .comp-cap { font-size: 13px; font-weight: 500; flex: 1; }
+    .comp-sfcc, .comp-shopify { font-size: 12px; flex: 1; text-align: center; }
+    .comp-sfcc { color: var(--red); }
+    .comp-shopify { color: var(--accent); font-weight: 600; }
+    .comp-header .comp-cap { font-size: 11px; color: var(--text-secondary); text-transform: uppercase; font-weight: 600; }
+    .comp-header .comp-sfcc, .comp-header .comp-shopify { font-size: 11px; color: var(--text-secondary); text-transform: uppercase; font-weight: 600; }
+
+    /* === PROOF POINTS === */
+    .proof-card {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 16px;
+      margin-bottom: 12px;
+    }
+    .proof-card:last-child { margin-bottom: 0; }
+    .proof-name { font-size: 15px; font-weight: 700; color: var(--accent); }
+    .proof-relevance { font-size: 12px; color: var(--text-secondary); margin-top: 4px; }
+    .proof-result { font-size: 13px; margin-top: 8px; color: var(--text); line-height: 1.4; }
+    .proof-strength {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      padding: 2px 6px;
+      border-radius: 3px;
+      margin-top: 6px;
+    }
+    .strength-strongest { background: var(--accent-dim); color: var(--accent); }
+    .strength-strong { background: var(--blue-dim); color: var(--blue); }
+    .strength-supporting { background: rgba(255,255,255,0.06); color: var(--text-secondary); }
+
+    /* === WHITESPACE TABLE === */
+    .ws-table { width: 100%; border-collapse: collapse; }
+    .ws-table th {
+      text-align: left;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      color: var(--text-secondary);
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--border);
+    }
+    .ws-table td {
+      padding: 10px 12px;
+      font-size: 13px;
+      border-bottom: 1px solid var(--border);
+    }
+    .ws-table tr:last-child td { border-bottom: none; }
+    .fit-critical { color: var(--red); font-weight: 700; }
+    .fit-high { color: var(--orange); font-weight: 600; }
+    .fit-medium { color: var(--blue); }
+    .fit-standard { color: var(--text-secondary); }
+
+    /* === OUTREACH TIMELINE === */
+    .outreach-week {
+      padding: 14px 16px;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      margin-bottom: 10px;
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+    }
+    .outreach-week:last-child { margin-bottom: 0; }
+    .week-num {
+      min-width: 42px;
+      height: 42px;
+      background: var(--surface-3);
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--accent);
+      flex-shrink: 0;
+    }
+    .week-content { flex: 1; }
+    .week-title { font-size: 14px; font-weight: 600; margin-bottom: 2px; }
+    .week-desc { font-size: 12px; color: var(--text-secondary); line-height: 1.4; }
+    .week-status {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      background: rgba(255,255,255,0.06);
+      color: var(--text-secondary);
+    }
+
+    /* === OBJECTION CARDS === */
+    .obj-item {
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .obj-item:last-child { border-bottom: none; }
+    .obj-q {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--orange);
+      margin-bottom: 4px;
+    }
+    .obj-a {
+      font-size: 13px;
+      color: var(--text-secondary);
+      line-height: 1.4;
+    }
+
+    /* === NEXT STEPS === */
+    .next-steps-list { list-style: none; }
+    .next-step {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .next-step:last-child { border-bottom: none; }
+    .step-check {
+      width: 20px;
+      height: 20px;
+      border: 2px solid var(--surface-3);
+      border-radius: 4px;
+      flex-shrink: 0;
+      margin-top: 1px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+    .step-check.checked { background: var(--accent); border-color: var(--accent); }
+    .step-check.checked::after { content: '✓'; font-size: 12px; color: #000; font-weight: 700; }
+    .step-text { font-size: 13px; line-height: 1.4; }
+
+    /* === SAVINGS HIGHLIGHT === */
+    .savings-hero {
+      text-align: center;
+      padding: 28px 20px;
+      background: linear-gradient(135deg, rgba(150,191,72,0.08) 0%, rgba(10,132,255,0.06) 100%);
+      border: 1px solid rgba(150,191,72,0.15);
+      border-radius: var(--radius);
+      margin-bottom: 20px;
+    }
+    .savings-big { font-size: 48px; font-weight: 800; color: var(--accent); letter-spacing: -2px; }
+    .savings-label { font-size: 14px; color: var(--text-secondary); margin-top: 4px; }
+    .savings-sub { font-size: 13px; color: var(--text-secondary); margin-top: 8px; }
+    .savings-row { display: flex; justify-content: center; gap: 40px; margin-top: 16px; }
+    .savings-stat { text-align: center; }
+    .savings-stat-num { font-size: 22px; font-weight: 700; color: var(--text); }
+    .savings-stat-label { font-size: 11px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; }
+
+    /* === ICP BREAKDOWN === */
+    .icp-row {
+      display: flex;
+      align-items: center;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--border);
+      gap: 12px;
+    }
+    .icp-row:last-child { border-bottom: none; }
+    .icp-cat { flex: 1; font-size: 13px; }
+    .icp-score-visual {
+      display: flex;
+      gap: 3px;
+    }
+    .icp-pip {
+      width: 18px;
+      height: 8px;
+      border-radius: 2px;
+      background: var(--surface-3);
+    }
+    .icp-pip.filled { background: var(--accent); }
+    .icp-pts { font-size: 12px; color: var(--text-secondary); min-width: 32px; text-align: right; }
+
+    /* === COVERAGE ANALYSIS === */
+    .cov-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 0;
+      font-size: 13px;
+    }
+    .cov-icon { font-size: 14px; }
+
+    /* === SFDC HISTORY === */
+    .history-stat {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 13px;
+    }
+    .history-stat:last-child { border-bottom: none; }
+    .history-label { color: var(--text-secondary); }
+    .history-value { font-weight: 600; }
+
+    /* === RISK WARNING === */
+    .risk-box {
+      background: var(--orange-dim);
+      border: 1px solid rgba(255,159,10,0.25);
+      border-radius: var(--radius-sm);
+      padding: 14px 16px;
+      margin-top: 12px;
+    }
+    .risk-title { font-size: 13px; font-weight: 700; color: var(--orange); margin-bottom: 4px; }
+    .risk-text { font-size: 12px; color: var(--text-secondary); line-height: 1.4; }
+    .dont-repeat {
+      list-style: none;
+      margin-top: 8px;
+    }
+    .dont-repeat li {
+      font-size: 12px;
+      color: var(--text-secondary);
+      padding: 3px 0;
+      padding-left: 18px;
+      position: relative;
+    }
+    .dont-repeat li::before {
+      content: '✕';
+      position: absolute;
+      left: 0;
+      color: var(--red);
+      font-weight: 700;
+      font-size: 11px;
+    }
+
+    /* === MILESTONES === */
+    .milestone-group { margin-bottom: 16px; }
+    .milestone-group:last-child { margin-bottom: 0; }
+    .milestone-label {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--accent);
+      margin-bottom: 6px;
+    }
+    .milestone-items { list-style: none; }
+    .milestone-items li {
+      font-size: 12px;
+      color: var(--text-secondary);
+      padding: 4px 0 4px 20px;
+      position: relative;
+    }
+    .milestone-items li::before {
+      content: '○';
+      position: absolute;
+      left: 0;
+      color: var(--surface-3);
+    }
+
+    /* === FOOTER === */
+    .footer {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 24px;
+      text-align: center;
+      font-size: 12px;
+      color: var(--text-secondary);
+      border-top: 1px solid var(--border);
+    }
+    .footer a { color: var(--accent); text-decoration: none; }
+    .footer a:hover { text-decoration: underline; }
+
+    /* === SECTION SPACER === */
+    .section { margin-bottom: 24px; }
+    .section-title {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      letter-spacing: -0.3px;
+    }
+
+    /* === ACV BAR === */
+    .acv-breakdown {
+      margin-top: 12px;
+    }
+    .acv-bar-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 6px 0;
+    }
+    .acv-bar-label { font-size: 12px; min-width: 160px; color: var(--text-secondary); }
+    .acv-bar-track {
+      flex: 1;
+      height: 10px;
+      background: var(--surface-3);
+      border-radius: 5px;
+      overflow: hidden;
+    }
+    .acv-bar-fill {
+      height: 100%;
+      border-radius: 5px;
+      transition: width 1s ease;
+    }
+    .acv-bar-val { font-size: 12px; font-weight: 600; min-width: 110px; text-align: right; }
+
+    /* === INTERNAL RESOURCES === */
+    .resource-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .resource-item:last-child { border-bottom: none; }
+    .resource-icon {
+      width: 32px; height: 32px;
+      background: var(--surface-3);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+    .resource-name { font-size: 13px; font-weight: 600; }
+    .resource-detail { font-size: 12px; color: var(--text-secondary); }
+  </style>
+</head>
+<body>
+
+  <!-- ========== HEADER ========== -->
+  <div class="header">
+    <div class="header-inner">
+      <div class="header-top">
+        <div class="header-left">
+          <div class="company-logo">NK</div>
+          <div>
+            <div class="company-name">Space NK</div>
+            <div class="company-sub">Premium Beauty Retail · $137.7M Revenue · 70+ Stores · UK, Ireland, USA</div>
+          </div>
+        </div>
+        <div class="header-badges">
+          <span class="badge badge-red">🔴 Top Priority</span>
+          <span class="badge badge-green">⚡ Pursue Immediately</span>
+          <span class="badge badge-blue">SFDC: 0018V00002d0vdyQAA</span>
+        </div>
+      </div>
+
+      <div class="score-bar">
+        <div class="score-item">
+          <div class="score-label">ICP Fit Score</div>
+          <div class="icp-meter">
+            <div class="icp-bar-track">
+              <div class="icp-bar-fill" style="width: 90%;"></div>
+            </div>
+            <div class="icp-num">9/10</div>
+          </div>
+          <div class="score-detail">Top Priority — Pursue Immediately</div>
+        </div>
+        <div class="score-item">
+          <div class="score-label">Estimated Entry ACV</div>
+          <div class="score-value" style="color: var(--accent);">$500K–$750K</div>
+          <div class="score-detail">Plus + POS (70 stores) + Markets</div>
+        </div>
+        <div class="score-item">
+          <div class="score-label">5-Year Savings for Prospect</div>
+          <div class="score-value" style="color: var(--accent);">$6.8M</div>
+          <div class="score-detail">vs. staying on SFCC ($2M+/yr → $628K/yr)</div>
+        </div>
+        <div class="score-item">
+          <div class="score-label">Current Platform</div>
+          <div class="score-value" style="font-size: 16px;">Salesforce Commerce Cloud</div>
+          <div class="score-detail">6-7 years · ~$2M+/year · At renewal window</div>
+        </div>
+        <div class="score-item">
+          <div class="score-label">Territory / Rep</div>
+          <div class="score-value" style="font-size: 16px;">Shiv Patel</div>
+          <div class="score-detail">Northern Europe · EMEA Large Accounts</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== MAIN CONTENT ========== -->
+  <div class="main">
+
+    <!-- SAVINGS HERO -->
+    <div class="savings-hero">
+      <div class="savings-big">$6.8M</div>
+      <div class="savings-label">Projected 5-Year Savings for Space NK (SFCC → Shopify Plus)</div>
+      <div class="savings-sub">$1.37M/year TCO reduction · 65% lower platform cost · Year 1 ROI even with $300K migration</div>
+      <div class="savings-row">
+        <div class="savings-stat">
+          <div class="savings-stat-num">$2M+</div>
+          <div class="savings-stat-label">Current SFCC Cost/yr</div>
+        </div>
+        <div class="savings-stat">
+          <div class="savings-stat-num" style="color: var(--accent);">$628K</div>
+          <div class="savings-stat-label">Shopify Plus Cost/yr</div>
+        </div>
+        <div class="savings-stat">
+          <div class="savings-stat-num" style="color: var(--red);">$115K</div>
+          <div class="savings-stat-label">Excess Spend / Month</div>
+        </div>
+        <div class="savings-stat">
+          <div class="savings-stat-num">65%</div>
+          <div class="savings-stat-label">TCO Reduction</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ROW 1: TRIGGERS + ICP BREAKDOWN -->
+    <div class="section">
+      <div class="grid grid-2-1">
+
+        <!-- TRIGGERS TIMELINE -->
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">🔔 Trigger Events & Timing</span>
+            <span class="badge badge-red" style="font-size: 10px;">Critical Window</span>
+          </div>
+          <div class="card-body">
+            <ul class="timeline">
+              <li class="timeline-item">
+                <div class="timeline-dot dot-critical"></div>
+                <div class="timeline-title">SFCC Contract at Renewal Window</div>
+                <div class="timeline-meta">Q1-Q2 2026 (estimated) · CRITICAL</div>
+                <div class="timeline-desc">6-7 years on SFCC = past typical 3-5 year contract cycle. If they re-sign, we lose 3-5 years. This is the single most time-sensitive trigger.</div>
+              </li>
+              <li class="timeline-item">
+                <div class="timeline-dot dot-high"></div>
+                <div class="timeline-title">New CEO: Andy Lightfoot (ex-THG Beauty)</div>
+                <div class="timeline-meta">Appointed 2025 · HIGH</div>
+                <div class="timeline-desc">Digital commerce veteran who built THG's Ingenuity platform. Understands platform economics, TCO, and the pain of monolithic systems. Uniquely receptive to platform conversations.</div>
+              </li>
+              <li class="timeline-item">
+                <div class="timeline-dot dot-high"></div>
+                <div class="timeline-title">PE Ownership: Manzanita Capital</div>
+                <div class="timeline-meta">Since 2021 · HIGH</div>
+                <div class="timeline-desc">PE mandate = cost optimization + EBITDA growth. $1.37M/year savings goes straight to bottom line. Potential exit timeline adds urgency to modernize tech stack.</div>
+              </li>
+              <li class="timeline-item">
+                <div class="timeline-dot dot-medium"></div>
+                <div class="timeline-title">Charlotte Tilbury Migrated SFCC → Shopify</div>
+                <div class="timeline-meta">Recent · Peer Pressure</div>
+                <div class="timeline-desc">Same vertical (luxury beauty), same platform, same geography. $6.8M saved. This is the single most powerful proof point.</div>
+              </li>
+              <li class="timeline-item">
+                <div class="timeline-dot dot-medium"></div>
+                <div class="timeline-title">70+ Stores Need Omnichannel Unification</div>
+                <div class="timeline-meta">Ongoing · Growing Pain</div>
+                <div class="timeline-desc">SFCC cannot natively unify POS + online. Every new store location makes the disconnect worse. Shopify POS is the answer.</div>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- ICP SCORE BREAKDOWN -->
+        <div>
+          <div class="card" style="margin-bottom: 20px;">
+            <div class="card-header">
+              <span class="card-title">📊 ICP Fit Breakdown</span>
+              <span style="font-size: 22px; font-weight: 800; color: var(--accent);">9/10</span>
+            </div>
+            <div class="card-body">
+              <div class="icp-row">
+                <div class="icp-cat">Company Size & Revenue</div>
+                <div class="icp-score-visual">
+                  <div class="icp-pip filled"></div>
+                  <div class="icp-pip filled"></div>
+                  <div class="icp-pip filled"></div>
+                </div>
+                <div class="icp-pts">3/3</div>
+              </div>
+              <div class="icp-row">
+                <div class="icp-cat">Industry Fit</div>
+                <div class="icp-score-visual">
+                  <div class="icp-pip filled"></div>
+                  <div class="icp-pip filled"></div>
+                </div>
+                <div class="icp-pts">2/2</div>
+              </div>
+              <div class="icp-row">
+                <div class="icp-cat">Growth Signals & Triggers</div>
+                <div class="icp-score-visual">
+                  <div class="icp-pip filled"></div>
+                  <div class="icp-pip filled"></div>
+                </div>
+                <div class="icp-pts">2/2</div>
+              </div>
+              <div class="icp-row">
+                <div class="icp-cat">Technical Fit</div>
+                <div class="icp-score-visual">
+                  <div class="icp-pip filled"></div>
+                  <div class="icp-pip filled"></div>
+                </div>
+                <div class="icp-pts">2/2</div>
+              </div>
+              <div class="icp-row">
+                <div class="icp-cat">Engagement Potential</div>
+                <div class="icp-score-visual">
+                  <div class="icp-pip"></div>
+                </div>
+                <div class="icp-pts" style="color: var(--orange);">0/1</div>
+              </div>
+              <div style="margin-top: 10px; font-size: 12px; color: var(--text-secondary); line-height: 1.4;">
+                <strong style="color: var(--orange);">Note:</strong> 179 emails with 0% response — but ALL were event spam. Never had a personalized 1:1 conversation. Fresh exec-level approach expected to perform differently.
+              </div>
+            </div>
+          </div>
+
+          <!-- COVERAGE ANALYSIS -->
+          <div class="card">
+            <div class="card-header">
+              <span class="card-title">🔍 Coverage Analysis</span>
+            </div>
+            <div class="card-body">
+              <div class="cov-row"><span class="cov-icon">✅</span> CEO (Andy Lightfoot — NEW)</div>
+              <div class="cov-row"><span class="cov-icon">✅</span> CDO (Margaret Mitchell — VERIFY)</div>
+              <div class="cov-row"><span class="cov-icon">✅</span> CTO (in SFDC)</div>
+              <div class="cov-row"><span class="cov-icon">✅</span> Head of CX (in SFDC — best signal)</div>
+              <div class="cov-row"><span class="cov-icon">✅</span> CMO (in SFDC)</div>
+              <div class="cov-row"><span class="cov-icon">✅</span> CFO (in SFDC)</div>
+              <div class="cov-row"><span class="cov-icon">✅</span> CCO (in SFDC)</div>
+              <div style="margin: 10px 0; border-top: 1px solid var(--border);"></div>
+              <div class="cov-row"><span class="cov-icon">❌</span> <span style="color: var(--red);">Head of eCommerce — #1 champion gap</span></div>
+              <div class="cov-row"><span class="cov-icon">❌</span> <span style="color: var(--red);">Head of Retail Ops (70+ stores)</span></div>
+              <div class="cov-row"><span class="cov-icon">❌</span> <span style="color: var(--orange);">Procurement</span></div>
+              <div class="cov-row"><span class="cov-icon">❌</span> <span style="color: var(--orange);">Head of Digital Product</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ROW 2: STAKEHOLDER TABLE (FULL WIDTH) -->
+    <div class="section">
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">👥 Buying Committee & Stakeholder Map</span>
+          <span style="font-size: 12px; color: var(--text-secondary);">10 identified · 4 NOT in SFDC · 4 gaps remaining</span>
+        </div>
+        <div style="overflow-x: auto;">
+          <table class="stk-table">
+            <thead>
+              <tr>
+                <th>Name / Title</th>
+                <th>Role</th>
+                <th>Priority</th>
+                <th>SFDC</th>
+                <th>Last Activity</th>
+                <th>Outreach Hook</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+                  <div class="stk-name">Andy Lightfoot</div>
+                  <div class="stk-title">CEO</div>
+                </td>
+                <td>Economic Buyer</td>
+                <td><span class="stk-priority stk-primary">#1 Target</span></td>
+                <td><span class="sfdc-badge sfdc-no">NOT IN SFDC</span></td>
+                <td>—</td>
+                <td><div class="stk-hook">"Given your experience scaling THG Beauty on Ingenuity, Charlotte Tilbury just saved $6.8M migrating off SFCC."</div></td>
+                <td style="font-size: 12px;">Add to SFDC → LinkedIn → Email Week 1</td>
+              </tr>
+              <tr>
+                <td>
+                  <div class="stk-name">Margaret Mitchell</div>
+                  <div class="stk-title">Chief Digital Officer</div>
+                </td>
+                <td>Champion / Tech Decision</td>
+                <td><span class="stk-priority stk-primary">#2 Target</span></td>
+                <td><span class="sfdc-badge sfdc-no">NOT IN SFDC</span></td>
+                <td>—</td>
+                <td><div class="stk-hook">"Luxury beauty brands spending 60-70% more than necessary on commerce. Charlotte Tilbury discovered a better path."</div></td>
+                <td style="font-size: 12px;">Verify LinkedIn → Add SFDC → Week 2</td>
+              </tr>
+              <tr>
+                <td>
+                  <div class="stk-name">[Name in SFDC]</div>
+                  <div class="stk-title">CTO</div>
+                </td>
+                <td>Technical Buyer / Blocker</td>
+                <td><span class="stk-priority stk-secondary">Secondary</span></td>
+                <td><span class="sfdc-badge sfdc-yes">IN SFDC</span></td>
+                <td><span style="color: var(--orange);">91 days (0/27 replies)</span></td>
+                <td><div class="stk-hook">"SFCC teams spend cycles on upgrades. Charlotte Tilbury redirected engineering to innovation."</div></td>
+                <td style="font-size: 12px;">Email Week 2 — respect current stack</td>
+              </tr>
+              <tr>
+                <td>
+                  <div class="stk-name">[Name in SFDC]</div>
+                  <div class="stk-title">Head of Customer Experience</div>
+                </td>
+                <td>Influencer / Champion</td>
+                <td><span class="stk-priority stk-secondary">Secondary</span></td>
+                <td><span class="sfdc-badge sfdc-yes">IN SFDC</span></td>
+                <td><span style="color: var(--accent);">77 days (best signal)</span></td>
+                <td><div class="stk-hook">"Seamless CX across 70+ stores. Printemps unified in-store and online on Shopify."</div></td>
+                <td style="font-size: 12px;">Email Week 1 — omnichannel pain</td>
+              </tr>
+              <tr>
+                <td>
+                  <div class="stk-name">[Name in SFDC]</div>
+                  <div class="stk-title">Chief Commercial Officer</div>
+                </td>
+                <td>Business Influencer</td>
+                <td><span class="stk-priority stk-secondary">Secondary</span></td>
+                <td><span class="sfdc-badge sfdc-yes">IN SFDC</span></td>
+                <td>118 days</td>
+                <td><div class="stk-hook">"Premium beauty brands launching campaigns in hours. 2x mobile conversion."</div></td>
+                <td style="font-size: 12px;">Email Week 3</td>
+              </tr>
+              <tr>
+                <td>
+                  <div class="stk-name">[Name in SFDC]</div>
+                  <div class="stk-title">CMO</div>
+                </td>
+                <td>Influencer</td>
+                <td><span class="stk-priority stk-tertiary">Tertiary</span></td>
+                <td><span class="sfdc-badge sfdc-yes">IN SFDC</span></td>
+                <td>100 days</td>
+                <td><div class="stk-hook">"Campaign launches in hours, not months. 2x mobile conversion on Shopify."</div></td>
+                <td style="font-size: 12px;">Engage after threads active</td>
+              </tr>
+              <tr>
+                <td>
+                  <div class="stk-name">[Name in SFDC]</div>
+                  <div class="stk-title">CFO</div>
+                </td>
+                <td>Financial Gatekeeper</td>
+                <td><span class="stk-priority stk-tertiary">Tertiary</span></td>
+                <td><span class="sfdc-badge sfdc-yes">IN SFDC</span></td>
+                <td style="color: var(--red);">457 days cold</td>
+                <td><div class="stk-hook">"$1.37M/year platform savings = straight to EBITDA. $6.8M over 5 years."</div></td>
+                <td style="font-size: 12px;">Only after traction — TCO lead</td>
+              </tr>
+              <tr>
+                <td>
+                  <div class="stk-name">James Crossley</div>
+                  <div class="stk-title">Engineering (below CTO)</div>
+                </td>
+                <td>Technical Evaluator</td>
+                <td><span class="stk-priority stk-tertiary">Tertiary</span></td>
+                <td><span class="sfdc-badge sfdc-no">NOT IN SFDC</span></td>
+                <td>—</td>
+                <td><div class="stk-hook">"Shopify dev ecosystem 10x larger. Modern APIs, automatic upgrades."</div></td>
+                <td style="font-size: 12px;">Verify LinkedIn → Tech conversation</td>
+              </tr>
+              <tr>
+                <td>
+                  <div class="stk-name">Sarah Thompson</div>
+                  <div class="stk-title">Data & Analytics</div>
+                </td>
+                <td>Technical Influencer</td>
+                <td><span class="stk-priority stk-tertiary">Tertiary</span></td>
+                <td><span class="sfdc-badge sfdc-no">NOT IN SFDC</span></td>
+                <td>—</td>
+                <td><div class="stk-hook">"Unified commerce = single source of truth across 70+ stores + online."</div></td>
+                <td style="font-size: 12px;">Verify LinkedIn</td>
+              </tr>
+              <tr>
+                <td>
+                  <div class="stk-name">Rachel Hughes</div>
+                  <div class="stk-title">Supply Chain / Operations</div>
+                </td>
+                <td>Operational Influencer</td>
+                <td><span class="stk-priority stk-tertiary">Tertiary</span></td>
+                <td><span class="sfdc-badge sfdc-no">NOT IN SFDC</span></td>
+                <td>—</td>
+                <td><div class="stk-hook">"Unified inventory management across all locations."</div></td>
+                <td style="font-size: 12px;">Verify LinkedIn</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ROW 3: COMPETITIVE + PROOF POINTS -->
+    <div class="section">
+      <div class="grid grid-2">
+
+        <!-- COMPETITIVE COMPARISON -->
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">⚔️ SFCC vs Shopify Plus — Head to Head</span>
+          </div>
+          <div class="card-body">
+            <div class="comp-row comp-header">
+              <div class="comp-cap">Capability</div>
+              <div class="comp-sfcc">SFCC (Current)</div>
+              <div class="comp-shopify">Shopify Plus</div>
+            </div>
+            <div class="comp-row">
+              <div class="comp-cap">Annual Cost</div>
+              <div class="comp-sfcc">$2M+/year</div>
+              <div class="comp-shopify">$628K/year</div>
+            </div>
+            <div class="comp-row">
+              <div class="comp-cap">Launch Speed</div>
+              <div class="comp-sfcc">6–12 weeks</div>
+              <div class="comp-shopify">Hours–days</div>
+            </div>
+            <div class="comp-row">
+              <div class="comp-cap">Omnichannel</div>
+              <div class="comp-sfcc">Separate systems</div>
+              <div class="comp-shopify">Native unified POS</div>
+            </div>
+            <div class="comp-row">
+              <div class="comp-cap">Developer Talent</div>
+              <div class="comp-sfcc">Scarce £80K–£120K</div>
+              <div class="comp-shopify">Abundant £40K–£70K</div>
+            </div>
+            <div class="comp-row">
+              <div class="comp-cap">App Ecosystem</div>
+              <div class="comp-sfcc">None (all custom)</div>
+              <div class="comp-shopify">10,000+ apps</div>
+            </div>
+            <div class="comp-row">
+              <div class="comp-cap">Upgrades</div>
+              <div class="comp-sfcc">Major project</div>
+              <div class="comp-shopify">Automatic</div>
+            </div>
+            <div style="margin-top: 12px; padding: 10px 14px; background: var(--surface-2); border-radius: var(--radius-sm); font-size: 12px; color: var(--text-secondary);">
+              <strong>Why companies leave SFCC:</strong> Total Cost (87%) · Speed (79%) · Complexity (71%) · Omnichannel (64%)
+              <br>
+              <span style="color: var(--text-secondary); font-size: 11px; margin-top: 4px; display: inline-block;">Klue Battle Card #3010795</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- PROOF POINTS -->
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">🏆 Proof Points & Customer References</span>
+          </div>
+          <div class="card-body">
+            <div class="proof-card">
+              <div class="proof-name">Charlotte Tilbury ★</div>
+              <div class="proof-relevance">Same vertical (luxury beauty) · Same platform (SFCC) · Same geography (UK)</div>
+              <div class="proof-result">$6.8M saved over 5 years · 35% cost reduction Year 1 · 60% faster launches · 2x mobile conversion</div>
+              <span class="proof-strength strength-strongest">Strongest — Use in every touchpoint</span>
+            </div>
+            <div class="proof-card">
+              <div class="proof-name">Printemps NYC</div>
+              <div class="proof-relevance">French luxury department store · Multi-brand retailer · Unified commerce (POS + online)</div>
+              <div class="proof-result">Chose Shopify for unified omnichannel across physical + digital</div>
+              <span class="proof-strength strength-strong">Strong — Contact: Jessica Kohl</span>
+            </div>
+            <div class="proof-card">
+              <div class="proof-name">ALDO Group</div>
+              <div class="proof-relevance">Multi-brand retailer · Thousands of stores · Massive omnichannel</div>
+              <div class="proof-result">Enterprise-grade unified commerce at scale. 75+ technical topics resolved.</div>
+              <span class="proof-strength strength-strong">Strong</span>
+            </div>
+            <div class="proof-card">
+              <div class="proof-name">Rare Beauty</div>
+              <div class="proof-relevance">Premium beauty · AI "magic mirror" pop-up — innovation velocity</div>
+              <div class="proof-result">Beauty-specific tech innovation only possible on a modern platform</div>
+              <span class="proof-strength strength-supporting">Supporting</span>
+            </div>
+            <div class="proof-card">
+              <div class="proof-name">MediaMarkt</div>
+              <div class="proof-relevance">Europe's largest electronics retailer · $22B GMV potential</div>
+              <div class="proof-result">Proof of enterprise-scale European migration to Shopify</div>
+              <span class="proof-strength strength-supporting">Supporting</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ROW 4: WHITESPACE + ACV SIZING -->
+    <div class="section">
+      <div class="grid grid-2">
+
+        <!-- WHITESPACE -->
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">🎯 Whitespace & Product Fit</span>
+          </div>
+          <div style="overflow-x: auto;">
+            <table class="ws-table">
+              <thead>
+                <tr>
+                  <th>Product</th>
+                  <th>Fit</th>
+                  <th>Priority</th>
+                  <th>Rationale</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Shopify Plus</strong> (Online)</td>
+                  <td><span class="fit-critical">🔴 Critical</span></td>
+                  <td>Primary</td>
+                  <td style="font-size: 12px; color: var(--text-secondary);">Replace SFCC for spacenk.com — core migration</td>
+                </tr>
+                <tr>
+                  <td><strong>Shopify POS</strong> (70+ stores)</td>
+                  <td><span class="fit-critical">🔴 Critical</span></td>
+                  <td>Co-Primary</td>
+                  <td style="font-size: 12px; color: var(--text-secondary);">Unified commerce for 70+ retail locations — key differentiator</td>
+                </tr>
+                <tr>
+                  <td><strong>Shopify Markets</strong></td>
+                  <td><span class="fit-high">🟡 High</span></td>
+                  <td>Phase 2</td>
+                  <td style="font-size: 12px; color: var(--text-secondary);">UK + Ireland + USA without separate SFCC instances</td>
+                </tr>
+                <tr>
+                  <td><strong>Shopify B2B</strong></td>
+                  <td><span class="fit-medium">🔵 Medium</span></td>
+                  <td>Phase 2</td>
+                  <td style="font-size: 12px; color: var(--text-secondary);">Wholesale & corporate gifting potential</td>
+                </tr>
+                <tr>
+                  <td><strong>Shopify Audiences</strong></td>
+                  <td><span class="fit-medium">🔵 Medium</span></td>
+                  <td>Phase 2</td>
+                  <td style="font-size: 12px; color: var(--text-secondary);">PE-mandated CAC efficiency</td>
+                </tr>
+                <tr>
+                  <td><strong>Shop Pay</strong></td>
+                  <td><span class="fit-standard">⚪ Standard</span></td>
+                  <td>With Launch</td>
+                  <td style="font-size: 12px; color: var(--text-secondary);">Accelerated checkout = higher conversion</td>
+                </tr>
+                <tr>
+                  <td><strong>Shopify Flow</strong></td>
+                  <td><span class="fit-standard">⚪ Standard</span></td>
+                  <td>With Launch</td>
+                  <td style="font-size: 12px; color: var(--text-secondary);">Automation replacing custom SFCC workflows</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- ACV SIZING -->
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">💰 Opportunity Sizing</span>
+          </div>
+          <div class="card-body">
+            <div style="text-align: center; margin-bottom: 20px;">
+              <div style="font-size: 36px; font-weight: 800; color: var(--accent); letter-spacing: -1px;">$600K–$900K</div>
+              <div style="font-size: 13px; color: var(--text-secondary);">Total Annual Potential (Entry + Expansion)</div>
+            </div>
+            <div class="acv-breakdown">
+              <div class="acv-bar-row">
+                <div class="acv-bar-label">Shopify Plus (Online)</div>
+                <div class="acv-bar-track">
+                  <div class="acv-bar-fill" style="width: 80%; background: var(--accent);"></div>
+                </div>
+                <div class="acv-bar-val">$300K–$400K/yr</div>
+              </div>
+              <div class="acv-bar-row">
+                <div class="acv-bar-label">Shopify POS (70+ stores)</div>
+                <div class="acv-bar-track">
+                  <div class="acv-bar-fill" style="width: 50%; background: var(--blue);"></div>
+                </div>
+                <div class="acv-bar-val">$150K–$250K/yr</div>
+              </div>
+              <div class="acv-bar-row">
+                <div class="acv-bar-label">Shopify Markets</div>
+                <div class="acv-bar-track">
+                  <div class="acv-bar-fill" style="width: 20%; background: var(--orange);"></div>
+                </div>
+                <div class="acv-bar-val">$50K–$100K/yr</div>
+              </div>
+              <div class="acv-bar-row">
+                <div class="acv-bar-label">Expansion (B2B, Audiences)</div>
+                <div class="acv-bar-track">
+                  <div class="acv-bar-fill" style="width: 30%; background: var(--purple);"></div>
+                </div>
+                <div class="acv-bar-val">$100K–$150K/yr</div>
+              </div>
+            </div>
+            <div style="margin-top: 20px; padding: 14px; background: var(--surface-2); border-radius: var(--radius-sm);">
+              <div style="font-size: 13px; font-weight: 600; margin-bottom: 6px;">Entry vs Expansion</div>
+              <div style="display: flex; gap: 20px;">
+                <div>
+                  <div style="font-size: 11px; color: var(--text-secondary); text-transform: uppercase;">Entry ACV</div>
+                  <div style="font-size: 18px; font-weight: 700;">$500K–$750K</div>
+                </div>
+                <div>
+                  <div style="font-size: 11px; color: var(--text-secondary); text-transform: uppercase;">Expansion ACV</div>
+                  <div style="font-size: 18px; font-weight: 700; color: var(--purple);">$100K–$150K</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ROW 5: OUTREACH SEQUENCE + SFDC HISTORY -->
+    <div class="section">
+      <div class="grid grid-2">
+
+        <!-- OUTREACH SEQUENCE -->
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">📧 4-Week Outreach Sequence</span>
+          </div>
+          <div class="card-body">
+            <div class="outreach-week">
+              <div class="week-num">W0</div>
+              <div class="week-content">
+                <div class="week-title">Pre-Outreach Prep <span class="week-status">THIS WEEK</span></div>
+                <div class="week-desc">LinkedIn research sprint. Add Andy Lightfoot + 12 stakeholders to SFDC. Pull Charlotte Tilbury case study + SFCC one-pager from Seismic. Brief Gabrielle Gant & Jessica Kohl. Coordinate with Maissa Fatte.</div>
+              </div>
+            </div>
+            <div class="outreach-week">
+              <div class="week-num">W1</div>
+              <div class="week-content">
+                <div class="week-title">Open Two Doors</div>
+                <div class="week-desc"><strong>Monday:</strong> LinkedIn + InMail to CEO Andy Lightfoot<br><strong>Tuesday:</strong> Email to Head of CX (omnichannel pain)<br><strong>Wednesday:</strong> Follow-up email to CEO with Charlotte Tilbury hook</div>
+              </div>
+            </div>
+            <div class="outreach-week">
+              <div class="week-num">W2</div>
+              <div class="week-content">
+                <div class="week-title">Multi-Thread & Follow Up</div>
+                <div class="week-desc"><strong>Monday:</strong> Email to CTO (technical architecture angle)<br><strong>Wednesday:</strong> CEO follow-up with SFCC Why Switch one-pager<br><strong>Thursday:</strong> LinkedIn to CDO Margaret Mitchell (if verified)</div>
+              </div>
+            </div>
+            <div class="outreach-week">
+              <div class="week-num">W3</div>
+              <div class="week-content">
+                <div class="week-title">Value Add & Expand</div>
+                <div class="week-desc">Send Charlotte Tilbury case study to CEO + CTO + Head of CX. Email CCO (commercial impact). Email CFO only if other threads show engagement.</div>
+              </div>
+            </div>
+            <div class="outreach-week">
+              <div class="week-num">W4</div>
+              <div class="week-content">
+                <div class="week-title">Consolidate & Convert</div>
+                <div class="week-desc">Propose 30-min executive briefing. Offer Charlotte Tilbury reference call. Bring in SE for technical conversation if CTO engaged. If no engagement: try warm intro paths, test different stakeholders, consider handwritten note to Space NK HQ.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SFDC HISTORY + OBJECTIONS -->
+        <div>
+          <!-- SFDC HISTORY -->
+          <div class="card" style="margin-bottom: 20px;">
+            <div class="card-header">
+              <span class="card-title">📋 Salesforce History</span>
+              <span class="badge badge-orange" style="font-size: 10px;">Risk: Medium</span>
+            </div>
+            <div class="card-body">
+              <div class="history-stat">
+                <span class="history-label">Status</span>
+                <span class="history-value">Net-New (No Shopify Presence)</span>
+              </div>
+              <div class="history-stat">
+                <span class="history-label">Past Opportunities</span>
+                <span class="history-value">0</span>
+              </div>
+              <div class="history-stat">
+                <span class="history-label">Emails Sent</span>
+                <span class="history-value" style="color: var(--red);">179 (0% response)</span>
+              </div>
+              <div class="history-stat">
+                <span class="history-label">Outreach Type</span>
+                <span class="history-value">100% event invitations</span>
+              </div>
+              <div class="history-stat">
+                <span class="history-label">Last Contact</span>
+                <span class="history-value">Dec 3, 2025 (85 days)</span>
+              </div>
+              <div class="history-stat">
+                <span class="history-label">Contacts in SFDC</span>
+                <span class="history-value">38 (24 active, 14 archived)</span>
+              </div>
+              <div class="history-stat">
+                <span class="history-label">C-Suite Contacts</span>
+                <span class="history-value">11</span>
+              </div>
+              <div class="history-stat">
+                <span class="history-label">Account Owner</span>
+                <span class="history-value">Maissa Fatte</span>
+              </div>
+
+              <div class="risk-box">
+                <div class="risk-title">⚠️ What NOT to Repeat</div>
+                <ul class="dont-repeat">
+                  <li>Mass event invitation cadences</li>
+                  <li>Impersonal / marketing-only outreach</li>
+                  <li>Generic emails without personalization</li>
+                  <li>Referencing past outreach attempts (treat as fresh)</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <!-- OBJECTIONS -->
+          <div class="card">
+            <div class="card-header">
+              <span class="card-title">🛡️ Objection Handling</span>
+            </div>
+            <div class="card-body">
+              <div class="obj-item">
+                <div class="obj-q">"We just renewed our SFCC contract"</div>
+                <div class="obj-a">→ Build business case now for next renewal window. Many brands start evaluation 12-18 months early.</div>
+              </div>
+              <div class="obj-item">
+                <div class="obj-q">"Migration is too risky"</div>
+                <div class="obj-a">→ Charlotte Tilbury did it — same platform, same industry. Phased rollouts reduce risk. We'll share their playbook.</div>
+              </div>
+              <div class="obj-item">
+                <div class="obj-q">"Our team is built around SFCC"</div>
+                <div class="obj-a">→ Shopify devs are 3x more abundant and 40-50% less expensive. Commerce knowledge transfers.</div>
+              </div>
+              <div class="obj-item">
+                <div class="obj-q">"Shopify is for small businesses"</div>
+                <div class="obj-a">→ Charlotte Tilbury, Printemps, ALDO, MediaMarkt ($22B GMV) — all enterprise brands on Shopify Plus.</div>
+              </div>
+              <div class="obj-item">
+                <div class="obj-q">"Other priorities right now"</div>
+                <div class="obj-a">→ Every month on SFCC = ~$115K excess spend. A 15-min call just gives you data for better decisions.</div>
+              </div>
+              <div class="obj-item">
+                <div class="obj-q">"PE investors want stability"</div>
+                <div class="obj-a">→ $1.37M/year savings = straight to EBITDA. Automatic upgrades = less risk, not more.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ROW 6: NEXT STEPS + MILESTONES + RESOURCES -->
+    <div class="section">
+      <div class="grid grid-3">
+
+        <!-- NEXT STEPS -->
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">✅ Immediate Next Steps</span>
+          </div>
+          <div class="card-body">
+            <ul class="next-steps-list">
+              <li class="next-step">
+                <div class="step-check" onclick="this.classList.toggle('checked')"></div>
+                <div class="step-text"><strong>Add Andy Lightfoot + 12 new stakeholders</strong> to Salesforce (TODAY)</div>
+              </li>
+              <li class="next-step">
+                <div class="step-check" onclick="this.classList.toggle('checked')"></div>
+                <div class="step-text"><strong>LinkedIn research:</strong> Verify Margaret Mitchell (CDO), find Head of eCommerce & Head of Retail Ops</div>
+              </li>
+              <li class="next-step">
+                <div class="step-check" onclick="this.classList.toggle('checked')"></div>
+                <div class="step-text"><strong>Pull Seismic assets:</strong> Charlotte Tilbury case study + SFCC Why Switch one-pager</div>
+              </li>
+              <li class="next-step">
+                <div class="step-check" onclick="this.classList.toggle('checked')"></div>
+                <div class="step-text"><strong>Brief Gabrielle Gant</strong> (EMEA luxury ABM) & <strong>Jessica Kohl</strong> (Printemps) — warm intro paths</div>
+              </li>
+              <li class="next-step">
+                <div class="step-check" onclick="this.classList.toggle('checked')"></div>
+                <div class="step-text"><strong>Coordinate with Maissa Fatte</strong> on account ownership/collaboration</div>
+              </li>
+              <li class="next-step">
+                <div class="step-check" onclick="this.classList.toggle('checked')"></div>
+                <div class="step-text"><strong>Connect with Andy Lightfoot</strong> on LinkedIn (Monday)</div>
+              </li>
+              <li class="next-step">
+                <div class="step-check" onclick="this.classList.toggle('checked')"></div>
+                <div class="step-text"><strong>Send personalized email</strong> to Andy Lightfoot (Wednesday)</div>
+              </li>
+              <li class="next-step">
+                <div class="step-check" onclick="this.classList.toggle('checked')"></div>
+                <div class="step-text"><strong>Email Head of CX</strong> — omnichannel hook (Tuesday)</div>
+              </li>
+              <li class="next-step">
+                <div class="step-check" onclick="this.classList.toggle('checked')"></div>
+                <div class="step-text"><strong>Post in #revenue-vertical-talk</strong> for Space NK / Manzanita connections</div>
+              </li>
+              <li class="next-step">
+                <div class="step-check" onclick="this.classList.toggle('checked')"></div>
+                <div class="step-text"><strong>Set 30-day checkpoint:</strong> March 28, 2026</div>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- 30/60/90 MILESTONES -->
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">📅 30/60/90-Day Milestones</span>
+          </div>
+          <div class="card-body">
+            <div class="milestone-group">
+              <div class="milestone-label">30 Days — by March 28, 2026</div>
+              <ul class="milestone-items">
+                <li>All new stakeholders added to SFDC</li>
+                <li>LinkedIn connections with top 5 targets</li>
+                <li>Personalized emails sent to top 5</li>
+                <li>At least 1 response received</li>
+                <li>Internal briefings complete (Gabrielle, Jessica, Maissa)</li>
+              </ul>
+            </div>
+            <div class="milestone-group">
+              <div class="milestone-label">60 Days — by April 27, 2026</div>
+              <ul class="milestone-items">
+                <li>First meeting/call with ≥1 stakeholder</li>
+                <li>Discovery: understand SFCC contract status</li>
+                <li>Charlotte Tilbury reference call offered</li>
+                <li>Custom TCO analysis prepared</li>
+                <li>Head of eCommerce identified & contacted</li>
+              </ul>
+            </div>
+            <div class="milestone-group">
+              <div class="milestone-label">90 Days — by May 27, 2026</div>
+              <ul class="milestone-items">
+                <li>Multi-threaded (3+ stakeholders engaged)</li>
+                <li>Technical architecture convo with CTO</li>
+                <li>Executive briefing delivered</li>
+                <li>Opportunity created in SFDC</li>
+                <li>Demo/POC discussed</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- INTERNAL RESOURCES -->
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">🧰 Internal Resources</span>
+          </div>
+          <div class="card-body">
+            <div style="font-size: 12px; font-weight: 600; text-transform: uppercase; color: var(--text-secondary); letter-spacing: 0.5px; margin-bottom: 8px;">People</div>
+            <div class="resource-item">
+              <div class="resource-icon">👤</div>
+              <div>
+                <div class="resource-name">Gabrielle Gant</div>
+                <div class="resource-detail">Sr. Marketer, EMEA luxury ABM · UK-based · ABM campaign support, luxury beauty network</div>
+              </div>
+            </div>
+            <div class="resource-item">
+              <div class="resource-icon">👤</div>
+              <div>
+                <div class="resource-name">Jessica Kohl</div>
+                <div class="resource-detail">Enterprise luxury, Printemps deal owner · EMEA · Luxury multi-brand expertise, reference path</div>
+              </div>
+            </div>
+            <div class="resource-item">
+              <div class="resource-icon">👤</div>
+              <div>
+                <div class="resource-name">Maissa Fatte</div>
+                <div class="resource-detail">Current account owner, EMEA Large North · Account history & coordination</div>
+              </div>
+            </div>
+
+            <div style="font-size: 12px; font-weight: 600; text-transform: uppercase; color: var(--text-secondary); letter-spacing: 0.5px; margin-bottom: 8px; margin-top: 16px;">Seismic Assets</div>
+            <div class="resource-item">
+              <div class="resource-icon">📄</div>
+              <div>
+                <div class="resource-name">Charlotte Tilbury Case Study</div>
+                <div class="resource-detail">#1 proof point — use in every touchpoint</div>
+              </div>
+            </div>
+            <div class="resource-item">
+              <div class="resource-icon">📄</div>
+              <div>
+                <div class="resource-name">SFCC "Why Switch" One-Pager</div>
+                <div class="resource-detail">Attach to Week 2 CEO follow-up</div>
+              </div>
+            </div>
+            <div class="resource-item">
+              <div class="resource-icon">⚔️</div>
+              <div>
+                <div class="resource-name">SFCC Battle Card</div>
+                <div class="resource-detail">Klue Card #3010795 — competitive talking points</div>
+              </div>
+            </div>
+            <div class="resource-item">
+              <div class="resource-icon">📊</div>
+              <div>
+                <div class="resource-name">Health & Beauty Research Pack</div>
+                <div class="resource-detail">Vertical insights + DSR template + inspiration deck</div>
+              </div>
+            </div>
+
+            <div style="font-size: 12px; font-weight: 600; text-transform: uppercase; color: var(--text-secondary); letter-spacing: 0.5px; margin-bottom: 8px; margin-top: 16px;">Slack Channels</div>
+            <div class="resource-item">
+              <div class="resource-icon">💬</div>
+              <div>
+                <div class="resource-name">#revenue-vertical-talk</div>
+                <div class="resource-detail">Post for Space NK / Manzanita Capital connections</div>
+              </div>
+            </div>
+            <div class="resource-item">
+              <div class="resource-icon">💬</div>
+              <div>
+                <div class="resource-name">#competitive-intelligence</div>
+                <div class="resource-detail">Flag SFCC renewal timing for competitive team</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ========== FOOTER ========== -->
+  <div class="footer">
+    <p>
+      <strong>Space NK Strategic Account Dashboard</strong> · Generated February 26, 2026
+      <br>
+      Account ID: 0018V00002d0vdyQAA · Territory: Northern Europe (EMEA Large Accounts) · Rep: Shiv Patel
+      <br>
+      Sources: Salesforce CRM, Web Research, Companies House, Vault Customer Stories, Klue Competitive Intelligence, Seismic Content Hub
+      <br>
+      <a href="../strategic_plan.md">📋 Full Strategic Plan</a> · <a href="data.json">📊 Raw Data (JSON)</a>
+    </p>
+  </div>
+
+</body>
+</html>
